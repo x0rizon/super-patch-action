@@ -26,12 +26,26 @@ on:
                     - 'xz'
                     - '7z'
                     - 'uncompressed'
-            GSI_IMG_LOCATION_XT:
-                description: 'Enter GSI Link (Extracted, img only, NO SPACES!)'
-                required: false
-            GSI_IMG_LOCATION_CMP:
-                description: 'Enter GSI Link (Compressed into .xz)'
-                required: false
+            # GSI_IMG_LOCATION_XT:
+            #     description: 'Enter GSI Link (Extracted, img only, NO SPACES!)'
+            #     required: false
+            # GSI_IMG_LOCATION_CMP:
+            #     description: 'Enter GSI Link (Compressed into .xz)'
+            #     required: false
+            GSI_LINK:
+                description: Enter GSI Link
+                required: true
+            GSI_FILE:
+                description: Compressed or pure?
+                required: true
+                default: xz
+                type: choice
+                options:
+                    - 'tar.xz'
+                    - 'xz'
+                    - 'zip'
+                    - 'tar'
+                    - 'No compression'
             NAME_REL:
                 description: 'Enter Name for Github Release'
                 required: true
@@ -104,31 +118,49 @@ jobs:
 
                 - name: Grabbing Images
                   run: |
-                    LOC_CMP="${{ github.event.inputs.GSI_IMG_LOCATION_CMP }}"
-                    LOC_XT="${{ github.event.inputs.GSI_IMG_LOCATION_XT }}"
-                    if [[ -n "$LOC_CMP" ]] && [[ -n "$LOC_XT" ]]; then
-                    echo "Only One variable are allowed"
-                    exit 1
-                    fi
-                    if [[ -n "$LOC_CMP" ]]; then
-                        mkdir cmp_img
-                        cd cmp_img
-                        aria2c -x 10 ${{ github.event.inputs.GSI_IMG_LOCATION_CMP }}
-                        7za x *.xz
-                        cp *.img system.img
-                        cd ..
-                    elif [[ -n "$LOC_XT" ]]; then
-                        mkdir cmp_img
-                        cd cmp_img
-                        aria2c -x 10 ${{ github.event.inputs.GSI_IMG_LOCATION_XT }}
-                        cp *.img system.img
-                        cd ..
-                    else
-                        echo "Error, Empty INPUT"
-                        exit 1
-                    fi
-                
-                
+                    GSILINK="${{github.event.inputs.GSI_LINK}}" 
+                    SEL="${{github.event.inputs.GSI_FILE}}" 
+                    case "$SEL" in
+                        "xz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            7za x *.xz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "tar.xz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            tar -xf *.tar.xz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "zip")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            unzip *.zip
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "tar")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            tar -xf *.tar
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "No compression")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                    esac
                 - name: Grabbing Super Image - TAR
                   if: |
                       github.event.inputs.TAR_SUPER != null
