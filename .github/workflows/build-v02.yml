@@ -26,12 +26,6 @@ on:
                     - 'xz'
                     - '7z'
                     - 'uncompressed'
-            # GSI_IMG_LOCATION_XT:
-            #     description: 'Enter GSI Link (Extracted, img only, NO SPACES!)'
-            #     required: false
-            # GSI_IMG_LOCATION_CMP:
-            #     description: 'Enter GSI Link (Compressed into .xz)'
-            #     required: false
             GSI_LINK:
                 description: Enter GSI Link
                 required: true
@@ -52,13 +46,10 @@ on:
             FOLDER_HEADING:
                 description: 'Enter what directory it will land on Sourceforge (REQUIRES THAT DIRECTORY TO BE PRESENT THERE, DOUBLE CHECK IT PLEASE) ALSO PLEASE ADD SLASH "/" at the end'
                 required: true
-            # PROJECT_ROOT_NAME:
-            #     description: 'Reading comprehension needed!: What project root name called: for SUFandom would be like this :https://sourceforge.net/projects/xynoxx-prebuilt-gsi:, so you stictly type : xynoxx-prebuilt-gsi : '
-            #     required: true
+
 
 jobs:
     Building-GSI:
-        if: github.event.repository.owner.id == github.event.sender.id
         runs-on: ubuntu-latest
         permissions:
             contents: write
