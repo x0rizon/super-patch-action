@@ -3,6 +3,8 @@
 A Samsung super.img Editor for you to install GSI (Geneeric System Image) on the web!
 
 No Linux, or WSL, or Termux Needed!
+
+> Note:<br> In January 2025, this area will undergone fixing to make sure it is user friendly as possible
 </div>
 
 ----
@@ -156,6 +158,8 @@ The red line must be the same as the target
 <br>
 7.5. Enter your password there, don't worry, your credentials are safe and non-duplicate
 7.6. Create another secret, name it: <code>SOURCEFORGE_REPO_TARGET</code>, see 6.2.1, copy and paste that red line
+<br>
+7.7. (For Build-v02) You need to create another secret called: <code>SFTP_REPO_LINK</code> which should try to let the visiting users know where are the mirrors
 <br>
 8. and you are Done
 </p>
