@@ -477,6 +477,8 @@ jobs:
                             Build Method: ${{ github.event.inputs.COMPRESSION_CHOICE }}
                             Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit the mirror instead
 
+                            Builder Used: v03
+
                             Recommend: Please Decompress/Extract the super.img file then flash it to your device
                   env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
