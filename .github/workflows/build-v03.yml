@@ -429,22 +429,23 @@ jobs:
                            ;;
                     esac
 # DONT BLAME ME, BLAME THE CREATORS OF ARTIFACTS, NOT ALLOWING DIRECT FILE DETECTION UNLIKE GITHUB RELEASE
+# And if you are wondering why is there no uncompressed artifacts, its because the image itself is already heavy
                 - name: Upload to Github Artifacts, tar
                   continue-on-error: true
                   uses: actions/upload-artifact@v4
                   with: 
-                    name: ${{ github.event.inputs.NAME_REL }}
+                    name: ${{ github.event.inputs.NAME_REL }}.tar
                     path: |
-                        "rel/${{ github.event.inputs.NAME_ID }}.tar"
+                        "rel/"
                     compression-level: 9
                 
                 - name: Upload to Github Artifacts, tar.xz
                   continue-on-error: true
                   uses: actions/upload-artifact@v4
                   with: 
-                      name: ${{ github.event.inputs.NAME_REL }}
+                      name: ${{ github.event.inputs.NAME_REL }}.tar.xz
                       path: |
-                          "rel/${{ github.event.inputs.NAME_ID }}.tar.xz"
+                          "rel/"
                       compression-level: 9
 
 
@@ -452,9 +453,9 @@ jobs:
                   continue-on-error: true
                   uses: actions/upload-artifact@v4
                   with: 
-                    name: ${{ github.event.inputs.NAME_REL }}
+                    name: ${{ github.event.inputs.NAME_REL }}.7z
                     path: |
-                        "rel/${{ github.event.inputs.NAME_ID }}.7z"
+                        "rel/"
                     compression-level: 9
 
                 - name: Upload to Github Releases
@@ -470,11 +471,11 @@ jobs:
                         body: |
                             Super Image File used: ${{ github.event.inputs.SUPER_LOCATE }} 
                             GSI Downloaded:
-                                - Compressed: ${{ github.event.inputs.GSI_IMG_LOCATION_CMP }}
-                                - Uncompressed: ${{ github.event.inputs.GSI_IMG_LOCATION_XT }}
+                                Link: ${{github.event.inputs.GSI_LINK}}
                             Link to SSH Uploaded (Mirror): ${{secrets.SFTP_REPO_LINK}}
+                                If this above ^ is missing a link, that means theere is no mirror or it's private
                             Build Method: ${{ github.event.inputs.COMPRESSION_CHOICE }}
-                            Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit SourceForge Instead
+                            Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit the mirror instead
 
                             Recommend: Please Decompress/Extract the super.img file then flash it to your device
                   env:

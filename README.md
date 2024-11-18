@@ -12,11 +12,10 @@ No Linux, or WSL, or Termux Needed!
 <div align=center>
 <h3>Badges</h3>
 
-![alttext](https://img.shields.io/static/v1?label=Status&message=Working&color=brightgreen) ![alttext](https://img.shields.io/badge/Version-v0.2-blue) ![alttext](https://img.shields.io/badge/SFTP_to_SourceForge-GOOD-BrightGreen?style=flat&logo=Sourceforge) 
+![alttext](https://img.shields.io/static/v1?label=Status&message=Working&color=brightgreen) ![alttext](https://img.shields.io/badge/Latest_Version-v0.3-purple) ![alttext](https://img.shields.io/badge/SFTP_to_SourceForge-GOOD-BrightGreen?style=flat&logo=Sourceforge) 
 
 [![alttext](https://img.shields.io/badge/-Visit_Mizumo/Xynoxx's_SourceForge_By_clicking_ME-black?style=for-the-badge&logo=Sourceforge&logoColor=f5f5f5)](https://sourceforge.net/projects/xynoxx-prebuilt-gsi/files/) 
 
-![alttext](https://img.shields.io/badge/Requires_Github_Enterprise_to_get_Beyond_2gb_Limit-Yes_that's_why_there's_sourceforge_requirement_in_here-red) 
 
 [![alttext](https://img.shields.io/badge/-Check_out_the_Offline_Version_Instead_by_clicking_ME!-purple?style=for-the-badge)](https://github.com/SUFandom/super-patch) 
 
