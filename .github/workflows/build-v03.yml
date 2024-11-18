@@ -59,7 +59,7 @@ on:
 
 
 jobs:
-    'Patch Super Images':
+    Patch_Super_Images:
         runs-on: ubuntu-latest
         permissions:
             contents: write
