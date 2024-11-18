@@ -196,7 +196,7 @@ jobs:
                             export VENDOR="$DIR/vendor.img"
                             export SUPER="$DIR/super.img"
                             aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
-                            tar -xf *.tar
+                            tar -xf *.tar.xz
                             if [ -e super.img ]; then
                                 mv super.img $DIR/
                             elif [ -e "$DIR/super.img" ]; then
