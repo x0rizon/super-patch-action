@@ -1,19 +1,20 @@
-name: Patch GSI to Samsung Super Image v.0.3
+# This build yml is moving away from sourceforge-only upload and diversifying
+# Having multiple options
+
+
+name: 'Super Patcher for A/B Devices - formerly called: Patch GSI to Samsung Super Image v.0.3'
 
 on:
     workflow_dispatch:
         inputs:
-            TAR_SUPER:
-                description: 'Super Image, but in TAR Format'
-                required: false
-            LZ4_SUPER:
-                description: 'Super Image, but in lz4 Format'
-                required: false
-            SUPER_LOCATE:
-                description: 'Super Image Link, make sure its in super.img form, NOT IN SUPER.IMG.LZ4'
-                required: false
+            NAME_REL:
+                description: 'Enter Name for Github Release'
+                required: true
+            SUPER_LINK:
+                description: 'Super.img Link for download'
+                required: true
             SUPER_TYPE:
-                description: 'Type of super that Github action is going to recieve'
+                description: 'Type of super image that Github action is going to recieve'
                 required: true
                 default: 'tar.xz'
                 type: choice
@@ -22,11 +23,12 @@ on:
                     - 'tar.xz'
                     - 'zip'
                     - '7z'
+                    - 'lz4'
                     - 'img'
             NAME_ID:
-                description: 'What you want to call the finished product'
+                description: 'What you want to call the finished product (Prohibit the use of profanity)'
                 required: true
-                default: 'GSI-Build-proto'
+                default: 'super-patchid'
             COMPRESSION_CHOICE:
                 description: 'Contain the image? (other types of compression coming soon)'
                 required: true
@@ -51,11 +53,8 @@ on:
                     - 'zip'
                     - 'tar'
                     - 'No compression'
-            NAME_REL:
-                description: 'Enter Name for Github Release'
-                required: true
-            FOLDER_HEADING:
-                description: 'Enter what directory it will land on Sourceforge (REQUIRES THAT DIRECTORY TO BE PRESENT THERE, DOUBLE CHECK IT PLEASE) ALSO PLEASE ADD SLASH "/" at the end'
+            SFTP_PRIV_DEST:
+                description: 'Type remote sftp folder the finish product would land'
                 required: true
 
 
@@ -65,17 +64,17 @@ jobs:
         permissions:
             contents: write
         steps:
-                - name: Display Session Parameters, for Logging Purposes
+                - name: Display Session Parameters, for Logging Purposes Just in case if something goes wrong
                   run: |
-                    echo "::group::User ENV Var"
-                    echo "Super Location: ${{ github.event.inputs.SUPER_LOCATE }}"
+                    echo "User ENV Var"
+                    echo "Super Location: ${{ github.event.inputs.SUPER_LINK }}"
+                    echo "Super Compression Type: ${{ github.event.inputs.SUPER_TYPE }}"
                     echo "Name ID: ${{ github.event.inputs.NAME_ID }}"
                     echo "Compression Choice: ${{ github.event.inputs.COMPRESSION_CHOICE }}"
-                    echo "GSI IMG Location in Extracted Form: ${{ github.event.inputs.GSI_IMG_LOCATION_XT }}"
-                    echo "GSI IMG Location in Compressed form: ${{ github.event.inputs.GSI_IMG_LOCATION_CMP }}"
+                    echo "GSI IMG Link: ${{ github.event.inputs.GSI_LINK }}"
+                    echo "GSI IMG Type: ${{ github.event.inputs.GSI_FILE }}"
                     echo "Name REL: ${{ github.event.inputs.NAME_REL }}"
-                    echo "Super LZ4: ${{ github.event.inputs.LZ4_SUPER }}"
-                    echo "Heading: ${{ github.event.inputs.FOLDER_HEADING }}"
+                    echo "SFTP Server Dir: ${{ github.event.inputs.SFTP_PRIV_DEST }}"
 
                 - name: Check Out
                   uses: actions/checkout@v3
@@ -84,7 +83,9 @@ jobs:
                   uses: rokibhasansagar/slimhub_actions@main
                   with: 
                     retain: "docker_imgcache,docker_buildkit,container_tools,nodejs_npm,toolcache_node"
-                
+                # We need docker for SFTP sending
+
+
                 - name: Display Size Block
                   run: |
                     lsblk
@@ -94,7 +95,7 @@ jobs:
                     sudo apt update
                     sudo apt upgrade -y
                     sudo apt install p7zip* aria2 wget android-tools* lz4 rsync zstd libprotobuf-dev brotli android-sdk-libsparse-utils
-                    # IDK TF AM I DOING
+                    # IDK WHAT AM I DOING
                     pwd >> dir.txt
                     LOCATION_POINT=$(pwd)
                     echo $LOCATION_POINT
@@ -161,61 +162,132 @@ jobs:
                             cd ..
                             ;;
                     esac
-                - name: Grabbing Super Image - TAR
-                  if: |
-                      github.event.inputs.TAR_SUPER != null
-                      && github.event.inputs.SUPER_LOCATE == null
-                      && github.event.inputs.LZ4_SUPER == null
+                - name: Fetch Super Images
                   run: |
-                    echo "Preparing"
-                    mkdir image_build
-                    export DIR="$(pwd)/image_build"
-                    export ODM="$DIR/odm.img"
-                    export SYSTEM="$DIR/system.img"
-                    export SYSTEM_EXT="$DIR/system_ext.img"
-                    export PRODUCT="$DIR/product.img"
-                    export VENDOR="$DIR/vendor.img"
-                    export SUPER="$DIR/super.img"
-                    aria2c -x 10 ${{ github.event.inputs.TAR_SUPER }}
-                    tar -xf *.tar
-                    mv super.img $DIR/
-
-                - name: Grabbing Super Image - LZ4
-                  if: |
-                   github.event.inputs.TAR_SUPER == null
-                   && github.event.inputs.SUPER_LOCATE == null
-                   && github.event.inputs.LZ4_SUPER != null
-                  run: |
-                   echo "Preparing"
-                   mkdir image_build
-                   export DIR="$(pwd)/image_build"
-                   export PRODUCT="$DIR/product.img"
-                   export ODM="$DIR/odm.img"
-                   export SYSTEM="$DIR/system.img"
-                   export SYSTEM_EXT="$DIR/system_ext.img"
-                   export VENDOR="$DIR/vendor.img"
-                   export SUPER="$DIR/super.img"
-                   aria2c -x 10 ${{ github.event.inputs.LZ4_SUPER }}
-                   lz4 super.img.lz4
-                   mv super.img $DIR/
-
-                - name: Grabbing Super Image
-                  if:
-                    github.event.inputs.TAR_SUPER == null
-                    && github.event.inputs.SUPER_LOCATE != null
-                    && github.event.inputs.LZ4_SUPER == null
-                  run: |
-                    echo "Preparing"
-                    mkdir image_build
-                    export DIR="$(pwd)/image_build"
-                    export PRODUCT="$DIR/product.img"
-                    export ODM="$DIR/odm.img"
-                    export SYSTEM="$DIR/system.img"
-                    export SYSTEM_EXT="$DIR/system_ext.img"
-                    export VENDOR="$DIR/vendor.img"
-                    export SUPER="$DIR/super.img"
-                    aria2c -x 10 ${{ github.event.inputs.SUPER_LOCATE }}
-                    mv super.img $(pwd)/image_build/
+                    SUPERTYPE="${{github.event.inputs.SUPER_TYPE}}"
+                    case "$SUPERTYPE" in
+                        "tar")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            tar -xf *.tar
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                exit 1
+                            fi
+                            ;;
+                        "tar.xz")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            tar -xf *.tar
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                exit 1
+                            fi
+                            ;;
+                        "zip")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            unzip *.zip
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                        "7z")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            7za x *.7z
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                        "lz4")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            lz4 -dv *.lz4
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                        "img")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                    esac
 
                 - name: Indexing Files
                   run: |
@@ -418,6 +490,6 @@ jobs:
                     user: ${{ secrets.SOURCEFORGE_USERNAME }}
                     pass: ${{ secrets.SOURCEFORGE_PASSWORD }}
                     localDir: './rel/'
-                    remoteDir: '/home/pfs/project/${{ secrets.SOURCEFORGE_REPO_TARGET }}/${{ github.event.inputs.FOLDER_HEADING }}'
+                    remoteDir: '${{github.event.inputs.SFTP_PRIV_DEST}}'
 
  
