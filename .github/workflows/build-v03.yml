@@ -59,7 +59,7 @@ on:
 
 
 jobs:
-    'Patch Super Images':
+    Patch-super:
         runs-on: ubuntu-latest
         permissions:
             contents: write
@@ -471,9 +471,10 @@ jobs:
                         body: |
                             Super Image File used: ${{ github.event.inputs.SUPER_LOCATE }} 
                             GSI Downloaded:
-                                Link: ${{github.event.inputs.GSI_LINK}}
-                            Link to SSH Uploaded (Mirror): ${{secrets.SFTP_REPO_LINK}}
-                                If this above ^ is missing a link, that means theere is no mirror or it's private
+                            - Link: ${{github.event.inputs.GSI_LINK}}
+                            - Link to SSH Uploaded (Mirror): ${{secrets.SFTP_REPO_LINK}}
+                            If this above ^ is missing a link, that means theere is no mirror or it's private
+                            
                             Build Method: ${{ github.event.inputs.COMPRESSION_CHOICE }}
                             Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit the mirror instead
 

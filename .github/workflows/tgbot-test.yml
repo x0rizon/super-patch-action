@@ -1,0 +1,22 @@
+# DO NOT RUN THIS
+# This is meant for debugging purposes only
+
+name: 'TGBot Debug'
+
+on: [push]
+
+jobs:
+  build:
+    name: 'Telegram Test Bot'
+    runs-on: ubuntu-latest
+    steps:
+       - name: send telegram message on push
+         uses: appleboy/telegram-action@master
+         with:
+          to: '${{secrets.TELEGRAM_TO}}'
+          token: '${{secrets.TELEGRAM_TOKEN}}'
+          message: |
+          This is a test message that has been brodcasted by the GH Actions using telegram-action
+
+          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+
