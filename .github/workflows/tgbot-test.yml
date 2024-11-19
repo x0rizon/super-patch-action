@@ -16,7 +16,7 @@ jobs:
           to: '${{secrets.TELEGRAM_TO}}'
           token: '${{secrets.TELEGRAM_TOKEN}}'
           message: |
-          This is a test message that has been brodcasted by the GH Actions using telegram-action
-
-          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            This is a test message that has been brodcasted by the GH Actions using telegram-action
+  
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 
