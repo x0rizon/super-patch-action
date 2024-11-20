@@ -517,9 +517,9 @@ jobs:
                         
                         For: ${{github.event.inputs.FORDEVICE}}
 
-                      GSI File: ${{github.event.inputs.GSI_LINK}}
+                      GSI File: ${{github.event.inputs.GSI_LINK}}<br>
                       Checksum:
-                            SHA256: ${{steps.set-vars.outputs.sha256}}
+                            SHA256: ${{steps.set-vars.outputs.sha256}}<br>
                       File Size: ${{steps.set-vars.outputs.filesize}}
 
 
