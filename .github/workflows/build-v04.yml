@@ -434,9 +434,39 @@ jobs:
                 - name: Measuring the File by release and things
                   id: set-vars
                   run: |
-                    CSUM=$(sha256sum rel/)
-                    echo "::set-output name=sha256::$CSUM"
-                    echo "::set-output name=filesize::$FSIZE"
+                    FINISH="${{github.event.inputs.COMPRESSION_CHOICE}}"
+                    NAMEFILE="${{github.event.inputs.NAME_ID}}"
+                    case $FINISH in
+                        "tar")
+                            POINT="$NAMEFILE.tar"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            ;;
+                        "tar.xz")
+                            POINT="$NAMEFILE.tar.xz"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            ;;
+                        "7z")
+                            POINT="$NAMEFILE.7z"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            ;;
+                        "uncompressed")
+                            POINT="super.img"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            ;;
+                    esac
+                    
 # DONT BLAME ME, BLAME THE CREATORS OF ARTIFACTS, NOT ALLOWING DIRECT FILE DETECTION UNLIKE GITHUB RELEASE
 # And if you are wondering why is there no uncompressed artifacts, its because the image itself is already heavy
                 - name: Upload to Github Artifacts, tar
@@ -519,6 +549,7 @@ jobs:
                       GSI File: ${{github.event.inputs.GSI_LINK}}<br>
                       Checksum:
                             SHA256: ${{steps.set-vars.outputs.sha256}}<br>
+                      File Size: ${{steps.set-vars.outputs.filesize}}
 
 
                       [Download]('https://github.com/MizProject/super-patch-action/releases/tag/${{github.run_id}}') | SFTP Alternative: ${{secrets.SFTP_REPO_LINK}}
