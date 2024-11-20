@@ -62,7 +62,7 @@ on:
 
 jobs:
     build:
-    name: 'Super Image Patch'
+        name: 'Super Image Patch'
         runs-on: ubuntu-latest
         permissions:
             contents: write
