@@ -434,7 +434,7 @@ jobs:
                 - name: Measuring the File by release and things
                   id: set-vars
                   run: |
-                    FSIZE=$(ls -lha rel/ | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')
+                    FSIZE=$(ls -lha rel/* | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')
                     CSUM=$(sha256sum rel/)
                     echo "::set-output name=sha256::$CSUM"
                     echo "::set-output name=filesize::$FSIZE"
