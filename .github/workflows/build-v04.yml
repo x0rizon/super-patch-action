@@ -434,7 +434,6 @@ jobs:
                 - name: Measuring the File by release and things
                   id: set-vars
                   run: |
-                    FSIZE=$(ls -lha rel/* | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')
                     CSUM=$(sha256sum rel/)
                     echo "::set-output name=sha256::$CSUM"
                     echo "::set-output name=filesize::$FSIZE"
@@ -520,7 +519,6 @@ jobs:
                       GSI File: ${{github.event.inputs.GSI_LINK}}<br>
                       Checksum:
                             SHA256: ${{steps.set-vars.outputs.sha256}}<br>
-                      File Size: ${{steps.set-vars.outputs.filesize}}
 
 
                       [Download]('https://github.com/MizProject/super-patch-action/releases/tag/${{github.run_id}}') | SFTP Alternative: ${{secrets.SFTP_REPO_LINK}}
