@@ -32,7 +32,7 @@ on:
                 required: true
                 default: 'super-patchid'
             COMPRESSION_CHOICE:
-                description: 'Contain the image? (other types of compression coming soon)'
+                description: 'How would you like the final product would be, compressed [tar, xz, 7z, lz4], or uncompressed? (Note: if you are choosing lz4, super.img will be compressed to LZ4 but will be contained in a tar file)'
                 required: true
                 default: 'xz'
                 type: choice
@@ -40,6 +40,7 @@ on:
                     - 'tar'
                     - 'xz'
                     - '7z'
+                    - 'lz4'
                     - 'uncompressed'
             GSI_LINK:
                 description: Enter GSI Link
@@ -426,8 +427,16 @@ jobs:
                             cd ..
                             cp "image_build/$NAME_CHOICE.7z" rel/
                             ;;
+                        "lz4")
+                            cd image_build
+                            lz4 -12 -v -T0 super.img super.img.lz4
+                            tar -cvf "$NAME_CHOICE.tar" super.img.lz4
+                            cd ..
+                            cp "image_build/$NAME_CHOICE.tar" rel/
+                            ;;
                         "uncompressed")
                             echo "Bruh, ok"
+                            echo "DEBUG: THIS FILE WILL NOT BE RENAMED :D"
                             cp image_build/super.img rel/super.img
                            ;;
                     esac
@@ -443,13 +452,17 @@ jobs:
                             CSUM=$(sha256sum rel/$POINT)
                             echo "::set-output name=sha256::$CSUM"
                             echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
                             ;;
-                        "tar.xz")
+                        "xz")
                             POINT="$NAMEFILE.tar.xz"
                             FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
                             CSUM=$(sha256sum rel/$POINT)
                             echo "::set-output name=sha256::$CSUM"
                             echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
                             ;;
                         "7z")
                             POINT="$NAMEFILE.7z"
@@ -457,6 +470,17 @@ jobs:
                             CSUM=$(sha256sum rel/$POINT)
                             echo "::set-output name=sha256::$CSUM"
                             echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
+                            ;;
+                        "lz4")
+                            POINT="$NAMEFILE.tar"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
                             ;;
                         "uncompressed")
                             POINT="super.img"
@@ -464,18 +488,20 @@ jobs:
                             CSUM=$(sha256sum rel/$POINT)
                             echo "::set-output name=sha256::$CSUM"
                             echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
                             ;;
                     esac
                     
 # DONT BLAME ME, BLAME THE CREATORS OF ARTIFACTS, NOT ALLOWING DIRECT FILE DETECTION UNLIKE GITHUB RELEASE
 # And if you are wondering why is there no uncompressed artifacts, its because the image itself is already heavy
-                - name: Upload to Github Artifacts, tar
+                - name: Upload to Github Artifacts, tar/lz4
                   continue-on-error: true
                   uses: actions/upload-artifact@v4
                   with: 
-                    name: ${{ github.event.inputs.NAME_REL }}.tar
+                    name: ${{ github.event.inputs.NAME_REL }}
                     path: |
-                        "rel/"
+                        "rel/${{github.event.inputs.NAME_REL}}.tar"
                     compression-level: 9
                 
                 - name: Upload to Github Artifacts, tar.xz
@@ -484,7 +510,7 @@ jobs:
                   with: 
                       name: ${{ github.event.inputs.NAME_REL }}.tar.xz
                       path: |
-                          "rel/"
+                          "rel/${{github.event.inputs.NAME_REL}}.tar.xz"
                       compression-level: 9
 
 
@@ -494,7 +520,7 @@ jobs:
                   with: 
                     name: ${{ github.event.inputs.NAME_REL }}.7z
                     path: |
-                        "rel/"
+                        "rel/${{github.event.inputs.NAME_REL}}.7z"
                     compression-level: 9
 
                 - name: Upload to Github Releases
@@ -548,8 +574,8 @@ jobs:
 
                       GSI File: ${{github.event.inputs.GSI_LINK}}<br>
                       Checksum:
-                            SHA256: ${{steps.set-vars.outputs.sha256}}<br>
-                      File Size: ${{steps.set-vars.outputs.filesize}}
+                            - SHA256: ${{steps.set-vars.outputs.sha256}}<br>
+                            - File Size: ${{steps.set-vars.outputs.filesize}}
 
 
                       [Download]('https://github.com/MizProject/super-patch-action/releases/tag/${{github.run_id}}') | SFTP Alternative: ${{secrets.SFTP_REPO_LINK}}
