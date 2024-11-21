@@ -4,7 +4,6 @@ on:
   push:
     branches:
     - main
-  workflow_dispatch:
   
 
 jobs:
@@ -28,7 +27,7 @@ jobs:
             STATS=$(cat stats.txt)
             GIT_USER=$(git log -1 --pretty=format:'%an')
             COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-            MESSAGE="New Changes on super-patch action..\n\n\nFiles changed:\n$FILE_CHANGES\n$STATS\n\nAuthored by: @${GIT_USER}\nCheck changes with [main](${COMMIT_URL})"
+            MESSAGE='New Changes on <b><a href="https://github.com/MizProject/super-patch-action>"super-patch-action</a></b>.. <br><br>Files changed:\$FILE_CHANGES\n$STATS\n\nAuthored by: @${GIT_USER}\nCheck changes with <a href="https://github.com/MizProject/super-patch-action/">main</a>'
             echo "::set-output name=message::$MESSAGE"
 
        - name: Send Telegram message on push
@@ -40,49 +39,4 @@ jobs:
 
 
           
-  workflow_dispatch_alert:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Find YAML file triggered
-        id: find-yml
-        run: |
-          YAML_FILE=$(find .github/workflows/ -name "*.yml" -print -quit)
-          echo "yaml_file=$YAML_FILE" >> $GITHUB_ENV
-
-      - name: Format Telegram message on workflow dispatch
-        id: format_message
-        run: |
-          GIT_USER=$(git log -1 --pretty=format:'%an')
-          WORKFLOW_NUM=${{ github.run_id }}
-          YAML_FILE=${{ env.yaml_file }}
-          MESSAGE="@${GIT_USER} is triggering a ${WORKFLOW_NUM} workflow using ${YAML_FILE}"
-          echo "::set-output name=message::$MESSAGE"
-
-      - name: Send Telegram message on workflow dispatch
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: ${{ steps.format_message.outputs.message }}
-
-  workflow_complete:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify on workflow completion
-        if: always()
-        run: |
-          TAG=$(git describe --tags)
-          WORKFLOW_NUM=${{ github.run_id }}
-          MESSAGE="The workflow ${WORKFLOW_NUM} has been completed with the following:\n\nTag: ${TAG}\nResults:\nPublished a GitHub release and created an artifact"
-          echo "::set-output name=message::$MESSAGE"
-
-      - name: Send Telegram message on workflow completion
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: ${{ steps.notify.outputs.message }}
-
+  
