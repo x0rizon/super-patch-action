@@ -30,7 +30,7 @@ jobs:
             GIT_USER=$(git log -1 --pretty=format:'%an')
             COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
             MESSAGE='New Changes on <b><a href="https://github.com/MizProject/super-patch-action>"super-patch-action</a></b>.. <br><br>Files changed:\$FILE_CHANGES\n$STATS\n\nAuthored by: @${GIT_USER}\nCheck changes with <a href="https://github.com/MizProject/super-patch-action/">main</a>'
-            echo "{message}={$MESSAGE}" >> $GITHUB_OUTPUT
+            echo "message=$MESSAGE" >> $GITHUB_OUTPUT
 
        - name: Send Telegram message on push
          uses: appleboy/telegram-action@master
