@@ -21,6 +21,6 @@ jobs:
             This is a **test** message that has been brodcasted by the GH Actions using telegram-action
   
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-          env:
+          env: |
             TELEGRAM_PARSE_MODE: markdown
 
