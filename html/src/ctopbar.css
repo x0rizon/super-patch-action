@@ -2,3 +2,8 @@
     overflow: hidden;
     background-color: black;
 }
+
+.tnav a:hover {
+    background-color: gainsboro;
+    color: whitesmoke
+}
