@@ -19,6 +19,8 @@ jobs:
          run: |
            git diff-tree --no-commit-id --name-status -r ${{ github.sha }} >> changes.txt 
            git diff --stat ${{ github.sha }} >> stats.txt
+           echo -e "DEBUG: CHANGE\n\n$(cat changes.txt)"
+           echo -e "DEBUG: stats\n\n$(cat changes.txt)"
 
        - name: Format Telegram message on push
          id: format_message
