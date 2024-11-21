@@ -22,7 +22,11 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
           message: |
-            New Changes on <b><a href="https://github.com/MizProject/super-patch-action">super-patch-action</a></b>.. <br><br>Authored by: @{{github.user}}<br>Check changes with <a href="https://github.com/MizProject/super-patch-action/">main</a>
+            New Changes on <b><a href="https://github.com/MizProject/super-patch-action">super-patch-action</a></b>.. 
+            
+            Authored by: @{{github.user}}
+            
+            Check changes with <a href="https://github.com/MizProject/super-patch-action/">main</a>
 
 
           
