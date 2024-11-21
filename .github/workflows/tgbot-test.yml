@@ -17,11 +17,11 @@ jobs:
          with:
           to: '${{secrets.TELEGRAM_TO}}'
           token: '${{secrets.TELEGRAM_TOKEN}}'
-          format: markdown
+          format: html
           message: |
-            This is a **test** message that has been brodcasted by the GH Actions using telegram-action
+            This is a <b>test</b> message that has been brodcasted by the GH Actions using telegram-action
   
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
 
-            Also sorry, for the ping, i am conducting an assessment
+            <i>Also sorry, for the ping, i am conducting an assessment</i>
 
