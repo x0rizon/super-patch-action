@@ -14,23 +14,6 @@ jobs:
        - name: Checkout
          uses: actions/checkout@v2
 
-       - name: Stat Calculate
-         id: changes
-         run: |
-           git diff-tree --no-commit-id --name-status -r ${{ github.sha }} >> changes.txt 
-           git diff --stat ${{ github.sha }} >> stats.txt
-           echo -e "DEBUG: CHANGE\n\n$(cat changes.txt)"
-           echo -e "DEBUG: stats\n\n$(cat changes.txt)"
-
-       - name: Format Telegram message on push
-         id: format_message
-         run: |
-            FILE_CHANGES=$(cat changes.txt)
-            STATS=$(cat stats.txt)
-            GIT_USER=$(git log -1 --pretty=format:'%an')
-            COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-            MESSAGE="New Changes on <b><a href='https://github.com/MizProject/super-patch-action>'super-patch-action</a></b>.. <br><br>Authored by: @${GIT_USER}\nCheck changes with <a href='https://github.com/MizProject/super-patch-action/'>main</a>"
-            echo "message=$MESSAGE" >> $GITHUB_OUTPUT
 
        - name: Send Telegram message on push
          uses: appleboy/telegram-action@master
@@ -38,7 +21,8 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
-          message: ${{ steps.format_message.outputs.message }}
+          message: |
+            New Changes on <b><a href="https://github.com/MizProject/super-patch-action">super-patch-action</a></b>.. <br><br>Authored by: @{{github.user}}<br>Check changes with <a href="https://github.com/MizProject/super-patch-action/">main</a>
 
 
           
