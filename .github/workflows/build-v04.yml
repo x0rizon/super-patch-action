@@ -46,7 +46,7 @@ on:
                 description: Enter GSI Link
                 required: true
             GSI_FILE:
-                description: Compressed or pure?
+                description: GSI File Type (No Compression means only .img)
                 required: true
                 default: xz
                 type: choice
@@ -55,6 +55,7 @@ on:
                     - 'xz'
                     - 'zip'
                     - 'tar'
+                    - 'img.gz'
                     - 'No compression'
             SFTP_PRIV_DEST:
                 description: 'Type remote sftp folder the finish product would land'
@@ -155,6 +156,14 @@ jobs:
                             cd cmp_img
                             aria2c -x 10 "$GSILINK"
                             tar -xf *.tar
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "img.gz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            gunzip *.tar
                             cp *.img system.img
                             cd ..
                             ;;
