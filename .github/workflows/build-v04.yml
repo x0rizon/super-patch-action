@@ -163,7 +163,7 @@ jobs:
                             mkdir cmp_img
                             cd cmp_img
                             aria2c -x 10 "$GSILINK"
-                            gunzip *.tar
+                            gunzip *.img.gz
                             cp *.img system.img
                             cd ..
                             ;;
