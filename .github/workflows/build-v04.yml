@@ -438,7 +438,8 @@ jobs:
                             ;;
                         "lz4")
                             cd image_build
-                            lz4 -12 -v -T0 super.img super.img.lz4
+                            lz4 -h
+                            lz4 -9 -v super.img super.img.lz4
                             tar -cvf "$NAME_CHOICE.tar" super.img.lz4
                             cd ..
                             cp "image_build/$NAME_CHOICE.tar" rel/
