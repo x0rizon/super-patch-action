@@ -553,7 +553,7 @@ jobs:
                             Build Method: ${{ github.event.inputs.COMPRESSION_CHOICE }}
                             Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit the mirror instead
 
-                            Builder Used: v03
+                            Builder Used: New Generation v04 Builder
 
                             Recommend: Please Decompress/Extract the super.img file then flash it to your device
                   env:
@@ -576,6 +576,7 @@ jobs:
                   with:
                     to: '${{secrets.TELEGRAM_TO}}'
                     token: '${{secrets.TELEGRAM_TOKEN}}'
+                    format: 'html'
                     message: |
                       **GSI Builder Triggered and released**: ${{github.event.inputs.NAME_REL}}
                         
@@ -592,8 +593,6 @@ jobs:
                       Mizu's Note:
 
                       > No Notes
-                  env:
-                    TELEGRAM_PARSE_MODE: "markdown"
 
 
  
