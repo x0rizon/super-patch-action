@@ -577,15 +577,14 @@ jobs:
                   with:
                     to: '${{secrets.TELEGRAM_TO}}'
                     token: '${{secrets.TELEGRAM_TOKEN}}'
-                    format: 'html'
                     message: |
                       **GSI Builder Triggered and released**: ${{github.event.inputs.NAME_REL}}
                         
                         For: ${{github.event.inputs.FORDEVICE}}
 
-                      GSI File: ${{github.event.inputs.GSI_LINK}}<br>
+                      GSI File: ${{github.event.inputs.GSI_LINK}}
                       Checksum:
-                            - SHA256: ${{steps.set-vars.outputs.sha256}}<br>
+                            - SHA256: ${{steps.set-vars.outputs.sha256}}
                             - File Size: ${{steps.set-vars.outputs.filesize}}
 
 
