@@ -52,6 +52,7 @@ on:
                 type: choice
                 options:
                     - 'tar.xz'
+                    - '7z'
                     - 'xz'
                     - 'zip'
                     - 'tar'
@@ -164,6 +165,14 @@ jobs:
                             cd cmp_img
                             aria2c -x 10 "$GSILINK"
                             gunzip *.img.gz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "7z")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            7za x *.7z
                             cp *.img system.img
                             cd ..
                             ;;
