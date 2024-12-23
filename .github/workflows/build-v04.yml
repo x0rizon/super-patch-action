@@ -142,7 +142,6 @@ jobs:
                             aria2c -x 10 "$GSILINK"
                             tar -xf *.tar.xz
                             cp *.img system.img
-                            if [  
                             cd ..
                             ;;
                         "zip")
