@@ -175,7 +175,7 @@ jobs:
                             aria2c -x 10 "$GSILINK"
                             7za x *.7z
                             cp *.img system.img
-                            if [ "$(ls -nl system.img | awk '{print $5}')" -lt 600000 ]; then
+                            if [ "$(ls -nl system.img | awk '{print $5}')" -lt 1073741824 ]; then
                                 echo "FILE IS NOT EXTRACTED PROPERLY"
                                 echo "ABOOOORT!"
                                 exit 1
