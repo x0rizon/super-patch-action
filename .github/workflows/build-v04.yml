@@ -59,8 +59,8 @@ on:
                     - 'img.gz'
                     - 'No compression'
             SFTP_PRIV_DEST:
-                description: 'Type remote sftp folder the finish product would land'
-                required: true
+                description: 'Type remote sftp folder the finish product would land (would recommend to add this because of GH Releases limit of 2GB)'
+                
 
 
 jobs:
@@ -142,6 +142,7 @@ jobs:
                             aria2c -x 10 "$GSILINK"
                             tar -xf *.tar.xz
                             cp *.img system.img
+                            if [  
                             cd ..
                             ;;
                         "zip")
@@ -174,6 +175,11 @@ jobs:
                             aria2c -x 10 "$GSILINK"
                             7za x *.7z
                             cp *.img system.img
+                            if [ "$(ls -nl system.img | awk '{print $5}')" -lt 600000 ]; then
+                                echo "FILE IS NOT EXTRACTED PROPERLY"
+                                echo "ABOOOORT!"
+                                exit 1
+                            fi
                             cd ..
                             ;;
                         "No compression")
