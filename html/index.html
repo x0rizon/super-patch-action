@@ -9,8 +9,60 @@
     </head>
     <body>
         <div class="tnav">
+            <a href="index.html" class="banner">Super-patch Action</a>
             <a class="active" href="index.html">Home</a>
-            <a href="docs.html">Documentation</a>
+            <a href="docs.html">Docs</a>
+            <a href="blogpost-head.html">Blog</a>
+            <a href="https://github.com/MizProject/super-patch-action" class="split">Source Code</a>
+            <a href="https://sourceforge.net/projects/xynoxx-prebuilt-gsi/" class="split_sf">Visit Prebuilt Super Builds</a>
+            <a href="https://github.com/Mizumo-prjkt/super-patch" class="split_alt">Offline Patcher</a>
+        </div>
+        <div class="bodypage">
+            <h1 class="headerpage">Super-patch Action</h1>
+            <p class="subtext_headerpage">A Github Actions tool to Patch your Android Device and Insert GSI's to devices that can't have a proper ROM ports.<br><i>Ehem. Some of Modern Samsung Exynos Phones (Especially Exynos 850)</i></p>
+            <a href="docs.html" class="get_started_button">Get Started</a>
+        </div>
+        <div class="content">
+            <div class="border-card">
+                <div class="l-half">
+                    <h1 class="flashpoint-1">A Tool to set your Android device to run Custom Android Flavours</h1>
+                    <p class="flashpoint-1">This tool will edit your device's super.img to replace the stock system.img and insert any GSI of your choice<br>From <a href="https://github.com/phhusson/treble_experimentations/wiki/Generic-System-Image-%28GSI%29-list">Phhusson</a>, <a href="https://t.me/mysticgsi">Mystic GSI</a>, ErfanGSI and more</p>
+                </div>
+                <div class="r-half">
+                    <img alt="lineage" class="lineage" src="src/LineageOS_Logo.svg.png">
+                    <img alt="aosp" class="aosp" src="src/Android-16-developer-preview.jpg"> <!-- note for size: if h sized as 2, multiply the w to 2 -->
+                    <img alt="evox" class="evox" src="src/evox.png">
+                    <img alt="pixel" class="pixel" src="src/pixelos.png">
+                    <img alt="crdroid" class="crdroid" src="src/crdroid.png">
+                </div>
+            </div>
+            <div class="fact-framework">
+                <div class="half-a-card-left">
+                    <h1 class="hcard-flashpoint">Runs on GitHub Actions</h1>
+                    <p class="hcard-flashpoint-para">This online patcher tool runs on GitHub Actions for easy and convenience</p>
+                    <a class="half-a-card-left-btn" href="docs-actions.html">More info</a>
+                    <span class="actions">
+                        <img alt="gh-actions" class="actions-img" src="src/actions.png">
+                    </span>
+                </div>
+                <div class="half-a-card-right">
+                    <h1 class="hcard2-flashpoint">Supports SFTP and GitHub Releases Upload</h1>
+                    <p class="hcard2-flashpoint-para">Super-patch Action supports uploading processed files to any SFTP servers or Github Releases.<br><br><i>(Note that GitHub releases has a file-size limit restrictions up to 2048MiB, so SFTP serves as an 'alternative' measure, refer to the documentation for more info why.)</i></p>
+                    <img alt="svgserver" class="server" src="src/server-svgrepo-com.png">
+                    <a class="half-a-card-right-btn" href="docs-sftp.html">More info</a>
+                </div>
+            </div>
+            <div class="device-screenshot-panel"> <!-- this is a card head -->
+                <div class="device-screenshot-panel_text">
+                    <h1 class="device-screenshot-panel_header">Screenshot of Devices</h1>
+                    <p class="device-screenshot-panel_subtext">Below are some screenshots of devices that are using the patched super.img and its ability to make the device run a custom Android flavour</p>
+                </div>
+                <div class="device-screenshot-panel_images">
+                    <img alt="pixel" class="device-screenshot-panel_img1" src="src/pixelos-device.png">
+                    <img alt="horizondroid" class="device-screenshot-panel_img2" src="src/horizondroid.png">
+                    <img alt="evo" class="device-screenshot-panel_img3" src="src/evox-device.png">
+                </div>
+            </div>
         </div>
     </body>
 </html>

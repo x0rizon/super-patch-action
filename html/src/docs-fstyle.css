@@ -1,0 +1,8 @@
+@font-face {
+    font-family: Cabin;
+    src: url(FONTS/Cabin/Cabin-VariableFont_wdth_wght.ttf);
+}
+
+body {
+    font-family: Cabin;
+}
