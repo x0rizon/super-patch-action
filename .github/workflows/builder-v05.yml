@@ -1,0 +1,618 @@
+# This build yml is moving away from sourceforge-only upload and diversifying
+# Having multiple options
+
+
+name: 'Super Patcher for A/B Devices v3'
+
+on:
+    workflow_dispatch:
+        inputs:
+            NAME_REL:
+                description: 'Enter Name for Github Release Header'
+                required: true
+            SUPER_LINK:
+                description: 'Super.img Link for download'
+                required: true
+            SUPER_TYPE:
+                description: 'Type of super image that Github action is going to recieve'
+                required: true
+                default: 'tar.xz'
+                type: choice
+                options:
+                    - 'tar'
+                    - 'tar.xz'
+                    - 'zip'
+                    - '7z'
+                    - 'lz4'
+                    - 'img'
+            FORDEVICE:
+                description: What is this for?, this is only for GH Action runners
+            NAME_ID:
+                description: 'What you want to call the finished product (Prohibit the use of profanity)'
+                required: true
+                default: 'super-patchid'
+            COMPRESSION_CHOICE:
+                description: 'How would you like the final product would be, compressed [tar, xz, 7z, lz4], or uncompressed? (Note: if you are choosing lz4, super.img will be compressed to LZ4 but will be contained in a tar file)'
+                required: true
+                default: 'xz'
+                type: choice
+                options:
+                    - 'tar'
+                    - 'xz'
+                    - '7z'
+                    - 'lz4'
+                    - 'uncompressed'
+            GSI_LINK:
+                description: Enter GSI Link
+                required: true
+            GSI_FILE:
+                description: GSI File Type (No Compression means only .img)
+                required: true
+                default: xz
+                type: choice
+                options:
+                    - 'tar.xz'
+                    - '7z'
+                    - 'xz'
+                    - 'zip'
+                    - 'tar'
+                    - 'img.gz'
+                    - 'No compression'
+            SFTP_PRIV_DEST:
+                description: 'Type remote sftp folder the finish product would land (would recommend to add this because of GH Releases limit of 2GB)'
+                
+
+
+jobs:
+    build:
+        name: 'Super Image Patch'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+                - name: Display Session Parameters, for Logging Purposes Just in case if something goes wrong
+                  run: |
+                    echo "User ENV Var"
+                    echo "Super Location: ${{ github.event.inputs.SUPER_LINK }}"
+                    echo "Super Compression Type: ${{ github.event.inputs.SUPER_TYPE }}"
+                    echo "Name ID: ${{ github.event.inputs.NAME_ID }}"
+                    echo "Compression Choice: ${{ github.event.inputs.COMPRESSION_CHOICE }}"
+                    echo "GSI IMG Link: ${{ github.event.inputs.GSI_LINK }}"
+                    echo "GSI IMG Type: ${{ github.event.inputs.GSI_FILE }}"
+                    echo "Name REL: ${{ github.event.inputs.NAME_REL }}"
+                    echo "SFTP Server Dir: ${{ github.event.inputs.SFTP_PRIV_DEST }}"
+
+                - name: Check Out
+                  uses: actions/checkout@v3
+
+                - name: Cleanup Bloated Action Environment
+                  uses: rokibhasansagar/slimhub_actions@main
+                  with: 
+                    retain: "docker_imgcache,docker_buildkit,container_tools,nodejs_npm,toolcache_node"
+                # We need docker for SFTP sending, and node for TGBots
+
+
+                - name: Display Size Block
+                  run: |
+                    lsblk
+                
+                - name: Prepare the Environment
+                  run: |
+                    sudo apt update
+                    sudo apt upgrade -y
+                    sudo apt install p7zip* aria2 wget android-tools* lz4 rsync zstd libprotobuf-dev brotli android-sdk-libsparse-utils
+                    # IDK WHAT AM I DOING
+                    pwd >> dir.txt
+                    LOCATION_POINT=$(pwd)
+                    echo $LOCATION_POINT
+                
+                - name: Grab Utils
+                  run: |
+                    mkdir bin
+                    cd bin
+                    wget https://github.com/SUFandom/super-patch/raw/main/packages/amd64/lpadd
+                    wget https://github.com/SUFandom/super-patch/raw/main/packages/amd64/lpdump
+                    wget https://github.com/SUFandom/super-patch/raw/main/packages/amd64/lpmake
+                    wget https://github.com/SUFandom/super-patch/raw/main/packages/amd64/lpunpack
+                    chmod +x *
+                    sudo cp * /usr/bin/
+                    cd ..
+                    mkdir universal
+                    cd universal
+                    wget https://github.com/SUFandom/super-patch/raw/main/fake-props/product.img
+                    wget https://github.com/SUFandom/super-patch/raw/main/fake-props/system_ext.img
+                    cd ..
+
+                - name: Grabbing Images
+                  run: |
+                    GSILINK="${{github.event.inputs.GSI_LINK}}" 
+                    SEL="${{github.event.inputs.GSI_FILE}}" 
+                    case "$SEL" in
+                        "xz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            7za x *.xz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "tar.xz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            tar -xf *.tar.xz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "zip")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            unzip *.zip
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "tar")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            tar -xf *.tar
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "img.gz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            gunzip *.img.gz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "7z")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            7za x *.7z
+                            cp *.img system.img
+                            if [ "$(ls -nl system.img | awk '{print $5}')" -lt 629145600 ]; then
+                                echo "FILE IS NOT EXTRACTED PROPERLY"
+                                echo "ABOOOORT!"
+                                exit 1
+                            fi
+                            cd ..
+                            ;;
+                        "No compression")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                    esac
+                - name: Fetch Super Images
+                  run: |
+                    SUPERTYPE="${{github.event.inputs.SUPER_TYPE}}"
+                    case "$SUPERTYPE" in
+                        "tar")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            tar -xf *.tar
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                exit 1
+                            fi
+                            ;;
+                        "tar.xz")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            tar -xf *.tar.xz
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                exit 1
+                            fi
+                            ;;
+                        "zip")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            unzip *.zip
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                        "7z")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            7za x *.7z
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                        "lz4")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            lz4 -dv *.lz4
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            elif [ -e "$DIR/super.img" ]; then
+                                echo "No need to intervene further after download since theres an image already being there"
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                        "img")
+                            mkdir -p image_build
+                            export DIR="$(pwd)/image_build"
+                            export ODM="$DIR/odm.img"
+                            export SYSTEM="$DIR/system.img"
+                            export SYSTEM_EXT="$DIR/system_ext.img"
+                            export PRODUCT="$DIR/product.img"
+                            export VENDOR="$DIR/vendor.img"
+                            export SUPER="$DIR/super.img"
+                            aria2c -x 10 ${{github.event.inputs.SUPER_LINK}}
+                            if [ -e super.img ]; then
+                                mv super.img $DIR/
+                            else
+                                echo "ERROR: CANNOT FIND SUPER.IMG!!!"
+                                echo "If this was a mistake, notify @Mizumo-prjkt :D"
+                                exit 1
+                            fi
+                            ;;
+                    esac
+
+                - name: Indexing Files
+                  run: |
+                   # Tryna make sure lol
+                   export DIR="$(pwd)/image_build"
+                   export ODM="$DIR/odm.img"
+                   export PRODUCT="$DIR/product.img"
+                   export SYSTEM="$DIR/system.img"
+                   export SYSTEM_EXT="$DIR/system_ext.img"
+                   export VENDOR="$DIR/vendor.img"
+                   export SUPER="$DIR/super.img"
+                   # Add some temps
+                   export TMP_ENVIRO="$(pwd)/tmp"
+                   mkdir tmp
+                   if [ -e "$DIR/super.img" ]; then
+                    simg2img $DIR/super.img $DIR/super_raw.img
+                    if [ $? != "0" ]; then
+                      echo "Image is not sparse"
+                    fi
+                    if [ -e "$DIR/super_raw.img" ]; then
+                        if [ "$(ls -nl "$DIR/super_raw.img" | awk '{print $5}')" -lt 100000 ]; then
+                            rm -rf super_raw.img
+                            lpdump $DIR/super.img > $TMP_ENVIRO/super_map.txt
+                            printf "$(<$TMP_ENVIRO/super_map.txt)" | grep -e "Size:" | awk '{print $2}' > $TMP_ENVIRO/super_size.txt
+                            printf "$(<$TMP_ENVIRO/super_map.txt)" | grep -e "Maximum size:" | awk '{print $3}' | sed '2!d' > $TMP_ENVIRO/super_main.txt
+                            lpunpack $DIR/super.img $DIR/
+                        else
+                            rm -rf $DIR/super.img
+                            lpdump $DIR/super_raw.img > $TMP_ENVIRO/super_map.txt
+                            printf "$(<$TMP_ENVIRO/super_map.txt)" | grep -e "Size:" | awk '{print $2}' > $TMP_ENVIRO/super_size.txt
+                            printf "$(<$TMP_ENVIRO/super_map.txt)" | grep -e "Maximum size:" | awk '{print $3}' | sed '2!d' > $TMP_ENVIRO/super_main.txt
+                            lpunpack $DIR/super_raw.img $DIR/
+                        fi
+                    else
+                        echo "Super.img is corrupted"
+                        exit 1
+                   fi
+                   fi
+                
+                - name: Editing the Super.img
+                  run: |
+                   # Tryna make sure lol
+                   export DIR="$(pwd)/image_build"
+                   export ODM="$DIR/odm.img"
+                   export SYSTEM="$DIR/system.img"
+                   export PRODUCT="$DIR/product.img"
+                   export SYSTEM_EXT="$DIR/system_ext.img"
+                   export VENDOR="$DIR/vendor.img"
+                   export SUPER="$DIR/super.img"
+                   # Add some temps
+                   export TMP_ENVIRO="$(pwd)/tmp"
+                   rm -rf $SYSTEM
+                   mv cmp_img/system.img $SYSTEM
+                   if [ "$(ls -nl "$SYSTEM" | awk '{print $5}')" -lt 100000 ]; then 
+                    echo "Invalid size for a GSI"
+                    exit 1
+                    fi
+                    cp universal/* $DIR/
+                   
+                - name: Building the whole Super.img
+                  run: |
+                   # Tryna make sure lol
+                   export DIR="$(pwd)/image_build"
+                   export ODM="$DIR/odm.img"
+                   export PRODUCT="$DIR/product.img"
+                   export SYSTEM="$DIR/system.img"
+                   export SYSTEM_EXT="$DIR/system_ext.img"
+                   export VENDOR="$DIR/vendor.img"
+                   export SUPER="$DIR/super.img"
+                   # Add some temps
+                   export TMP_ENVIRO="$(pwd)/tmp"
+                   rm -rf $SUPER
+                   if [ "$(find $DIR/system.img -type f ! -size 0 -printf '%S\n' | sed 's/.\.[0-9]*//')" == 1 ]; then
+                        echo "PRC"
+                   else
+                        simg2img $DIR/system.img $DIR/system.raw.img
+                        if [ $? != "0" ]; then
+                          echo "System cant be converted to sparse"
+                        fi
+                   fi
+                   if [ -e "$DIR/odm.img" ]; then
+                        if [ -e "$DIR/product.img" ]; then
+                            if [ "$(ls -nl $DIR/product.img | awk '{print $5}')" -gt 6000 ]; then 
+                                cp -urf universal/product.img $DIR/product.img
+                            fi
+                        else
+                            cp -urf universal/product.img $DIR/product.img
+                        fi
+                        cp universal/product.img $PRODUCT
+                        lpmake --metadata-size 65536 --super-name super --metadata-slots 2 --device super:$(<$TMP_ENVIRO/super_size.txt) --group main:$(<$TMP_ENVIRO/super_main.txt) --partition system:readonly:$(ls -nl $DIR/system.img | awk '{print $5}'):main --image system=$DIR/system.img --partition vendor:readonly:$(ls -nl $DIR/vendor.img | awk '{print $5}'):main --image vendor=$DIR/vendor.img --partition product:readonly:$(ls -nl $DIR/product.img | awk '{print $5}'):main --image product=$DIR/product.img --partition odm:readonly:$(ls -nl $DIR/odm.img | awk '{print $5}'):main --image odm=$DIR/odm.img --sparse --output $DIR/super.img
+                   else
+                        if [ -e "$DIR/product.img" ]; then 
+                             if [ "$(ls -nl $DIR/product.img | awk '{print $5}')" -gt 6000 ]; then
+                                cp -urf universal/product.img $DIR/product.img
+                                cp universal/product.img $PRODUCT
+                             fi
+                        else 
+                            cp -urf universal/product.img $DIR/product.img
+                        fi
+                        if [ !  -e "$DIR/system_ext.img" ]; then
+                            cp -urf universal/system_ext.img $DIR/product.img
+                        else 
+                            cp -urf universal/system_ext.img $DIR/product.img
+                        fi 
+                        lpmake --metadata-size 65536 --super-name super --metadata-slots 2 --device super:$(<$TMP_ENVIRO/super_size.txt) --group main:$(<$TMP_ENVIRO/super_main.txt) --partition system:readonly:$(ls -nl $DIR/system.img | awk '{print $5}'):main --image system=$DIR/system.img --partition vendor:readonly:$(ls -nl $DIR/vendor.img | awk '{print $5}'):main --image vendor=$DIR/vendor.img --partition product:readonly:$(ls -nl $DIR/product.img | awk '{print $5}'):main --image product=$DIR/product.img --partition system_ext:readonly:$(ls -nl $DIR/system_ext.img | awk '{print $5}'):main --image system_ext=$DIR/system_ext.img --sparse --output $DIR/super.img
+                    fi
+
+                - name: Packing the image
+                  run: |
+                   # Tryna make sure lol
+                   export DIR="$(pwd)/image_build"
+                   export PRODUCT="$DIR/product.img"
+                   export ODM="$DIR/odm.img"
+                   export SYSTEM="$DIR/system.img"
+                   export SYSTEM_EXT="$DIR/system_ext.img"
+                   export VENDOR="$DIR/vendor.img"
+                   export SUPER="$DIR/super.img"
+                   # Add some temps
+                   export TMP_ENVIRO="$(pwd)/tmp"
+                   export SELECT_SLIDER="${{ github.event.inputs.COMPRESSION_CHOICE }}"
+                   export NAME_CHOICE="${{ github.event.inputs.NAME_ID }}"
+                   mkdir rel
+                    case "$SELECT_SLIDER" in
+                        "tar")
+                            cd image_build
+                            tar -cvf "$NAME_CHOICE.tar" super.img
+                            cd ..
+                            cp "image_build/$NAME_CHOICE.tar" rel/
+                            ;;
+                        "xz")
+                            cd image_build
+                            tar --xz -Jcvf "$NAME_CHOICE.tar.xz" super.img
+                            cd ..
+                            cp "image_build/$NAME_CHOICE.tar.xz" rel/
+                            ;;
+                        "7z")
+                            cd image_build
+                            7za a -mx=9 "$NAME_CHOICE.7z" super.img
+                            cd ..
+                            cp "image_build/$NAME_CHOICE.7z" rel/
+                            ;;
+                        "lz4")
+                            cd image_build
+                            lz4 -h
+                            lz4 -9 -v super.img super.img.lz4
+                            tar -cvf "$NAME_CHOICE.tar" super.img.lz4
+                            cd ..
+                            cp "image_build/$NAME_CHOICE.tar" rel/
+                            ;;
+                        "uncompressed")
+                            echo "Bruh, ok"
+                            echo "DEBUG: THIS FILE WILL NOT BE RENAMED :D"
+                            cp image_build/super.img rel/super.img
+                           ;;
+                    esac
+                - name: Measuring the File by release and things
+                  id: set-vars
+                  run: |
+                    FINISH="${{github.event.inputs.COMPRESSION_CHOICE}}"
+                    NAMEFILE="${{github.event.inputs.NAME_ID}}"
+                    case $FINISH in
+                        "tar")
+                            POINT="$NAMEFILE.tar"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
+                            ;;
+                        "xz")
+                            POINT="$NAMEFILE.tar.xz"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
+                            ;;
+                        "7z")
+                            POINT="$NAMEFILE.7z"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
+                            ;;
+                        "lz4")
+                            POINT="$NAMEFILE.tar"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
+                            ;;
+                        "uncompressed")
+                            POINT="super.img"
+                            FILETARGET="$(ls -lha rel/$POINT | tail -n +2 | grep -v '^d' | awk '{print $5}' | sed 's/^ *//;s/ *$//')"
+                            CSUM=$(sha256sum rel/$POINT)
+                            echo "::set-output name=sha256::$CSUM"
+                            echo "::set-output name=filesize::$FILETARGET"
+                            echo "DEBUG: $CSUM"
+                            echo "DEBUG: $FILETARGET"
+                            ;;
+                    esac
+                    
+# DONT BLAME ME, BLAME THE CREATORS OF ARTIFACTS, NOT ALLOWING DIRECT FILE DETECTION UNLIKE GITHUB RELEASE
+# And if you are wondering why is there no uncompressed artifacts, its because the image itself is already heavy
+                - name: Upload to Github Artifacts, tar/lz4
+                  continue-on-error: true
+                  uses: actions/upload-artifact@v4
+                  with: 
+                    name: ${{ github.event.inputs.NAME_REL }}
+                    path: |
+                        "rel/${{github.event.inputs.NAME_REL}}.tar"
+                    compression-level: 9
+                
+                - name: Upload to Github Artifacts, tar.xz
+                  continue-on-error: true
+                  uses: actions/upload-artifact@v4
+                  with: 
+                      name: ${{ github.event.inputs.NAME_REL }}.tar.xz
+                      path: |
+                          "rel/${{github.event.inputs.NAME_REL}}.tar.xz"
+                      compression-level: 9
+
+
+                - name: Upload to Github Artifacts, 7z
+                  continue-on-error: true
+                  uses: actions/upload-artifact@v4
+                  with: 
+                    name: ${{ github.event.inputs.NAME_REL }}.7z
+                    path: |
+                        "rel/${{github.event.inputs.NAME_REL}}.7z"
+                    compression-level: 9
+
+                - name: Upload to Github Releases
+                  continue-on-error: true
+                  uses: softprops/action-gh-release@v2
+                  with:
+                        files: |
+                            rel/*.tar
+                            rel/*.tar.xz
+                            rel/*.7z
+                        name: ${{ github.event.inputs.NAME_REL }} - ${{ github.run_id }}
+                        tag_name: ${{ github.run_id }}
+                        body: |
+                            Super Image File used: ${{ github.event.inputs.SUPER_LOCATE }} 
+                            GSI Downloaded: <br>
+                            - Link: ${{github.event.inputs.GSI_LINK}}
+                            - Link to SSH Uploaded (Mirror): ${{secrets.SFTP_REPO_LINK}}
+                            <br>
+                            If this above ^ is missing a link, that means theere is no mirror or it's private
+                            
+                            Build Method: ${{ github.event.inputs.COMPRESSION_CHOICE }}
+                            Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit the mirror instead
+
+                            Builder Used: New Generation v04 Builder
+
+                            Recommend: Please Decompress/Extract the super.img file then flash it to your device
+                  env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                
+            
+
+                - name: Deploy to SourceForge
+                  uses: pressidium/lftp-mirror-action@v1
+                  with:
+                    host: frs.sourceforge.net
+                    port: 22
+                    user: ${{ secrets.SOURCEFORGE_USERNAME }}
+                    pass: ${{ secrets.SOURCEFORGE_PASSWORD }}
+                    localDir: './rel/'
+                    remoteDir: '${{github.event.inputs.SFTP_PRIV_DEST}}'
+
+                - name: 'Send alert to Telegram users : @Mizumo_prjkt'
+                  uses: appleboy/telegram-action@master
+                  with:
+                    to: '${{secrets.TELEGRAM_TO}}'
+                    token: '${{secrets.TELEGRAM_TOKEN}}'
+                    message: |
+                      **GSI Builder Triggered and released**: ${{github.event.inputs.NAME_REL}}
+                        
+                        For: ${{github.event.inputs.FORDEVICE}}
+
+                      GSI File: ${{github.event.inputs.GSI_LINK}}
+                      Checksum:
+                            - SHA256: ${{steps.set-vars.outputs.sha256}}
+                            - File Size: ${{steps.set-vars.outputs.filesize}}
+
+
+                      [Download]('https://github.com/MizProject/super-patch-action/releases/tag/${{github.run_id}}') | SFTP Alternative: ${{secrets.SFTP_REPO_LINK}}
+
+                      Mizu's Note:
+
+                      > No Notes
+
+
+ 
