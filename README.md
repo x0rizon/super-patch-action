@@ -4,7 +4,7 @@ A Samsung super.img Editor for you to install GSI (Geneeric System Image) on the
 
 No Linux, or WSL, or Termux Needed!
 
-> Note:<br> In January 2025, this area will undergone fixing to make sure it is user friendly as possible
+> Note:<br> In March 2025, this area will undergone fixing to make sure it is user friendly as possible
 </div>
 
 ----
