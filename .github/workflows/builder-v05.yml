@@ -330,7 +330,7 @@ jobs:
                    export TMP_ENVIRO="$(pwd)/tmp"
                    mkdir tmp
                    if [ -e "$DIR/super.img" ]; then
-                    simg2img $DIR/super.img $DIR/super_raw.img
+                    simg2img $DIR/super.img $DIR/super_raw.img 2>/dev/null
                     if [ $? != "0" ]; then
                       echo "Image is not sparse"
                     fi
@@ -390,7 +390,7 @@ jobs:
                    if [ "$(find $DIR/system.img -type f ! -size 0 -printf '%S\n' | sed 's/.\.[0-9]*//')" == 1 ]; then
                         echo "PRC"
                    else
-                        simg2img $DIR/system.img $DIR/system.raw.img
+                        simg2img $DIR/system.img $DIR/system.raw.img 2>/dev/null
                         if [ $? != "0" ]; then
                           echo "System cant be converted to sparse"
                         fi
