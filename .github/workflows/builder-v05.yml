@@ -349,9 +349,11 @@ jobs:
                             lpunpack $DIR/super_raw.img $DIR/
                         fi
                     else
-                        echo "Super.img is corrupted"
-                        exit 1
-                   fi
+                        lpdump $DIR/super.img > $TMP_ENVIRO/super_map.txt
+                        printf "$(<$TMP_ENVIRO/super_map.txt)" | grep -e "Size:" | awk '{print $2}' > $TMP_ENVIRO/super_size.txt
+                        printf "$(<$TMP_ENVIRO/super_map.txt)" | grep -e "Maximum size:" | awk '{print $3}' | sed '2!d' > $TMP_ENVIRO/super_main.txt
+                        lpunpack $DIR/super.img $DIR/
+                    fi
                    fi
                 
                 - name: Editing the Super.img
