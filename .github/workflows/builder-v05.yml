@@ -64,6 +64,10 @@ on:
                     - 'img.gz'
                     - 'img.xz'
                     - 'No compression'
+            SPARSE_SYSTEM_GSI:
+                description: Set the GSI to not have it sparsed. There are system GSI images that are ok for being sparsed and others are not for some reason, so if building fails on the Building the whole super.img, this can be the fix
+                default: true
+                type: boolean
             SFTP_PRIV_DEST:
                 description: 'Type remote sftp folder the finish product would land (would recommend to add this because of GH Releases limit of 2GB)'
                 
@@ -405,7 +409,9 @@ jobs:
                    if [ "$(find $DIR/system.img -type f ! -size 0 -printf '%S\n' | sed 's/.\.[0-9]*//')" == 1 ]; then
                         echo "PRC"
                    else
-                        simg2img $DIR/system.img $DIR/system.raw.img
+                       if [ "${{github.event.inputs.SPARSE_SYSTEM_GSI}}" == 'true' ]; then 
+                            simg2img $DIR/system.img $DIR/system.raw.img
+                        fi
                    fi
                    # 1
                    if [ -e "$DIR/odm.img" ]; then
