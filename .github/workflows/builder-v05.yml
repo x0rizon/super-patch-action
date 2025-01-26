@@ -13,6 +13,11 @@ on:
             SUPER_LINK:
                 description: 'Super.img Link for download'
                 required: true
+            IS_SPARSE:
+                description: 'Is the Image Sparse or not (if sparse, simg2img will be used for the super partition)'
+                required: true
+                default: true
+                type: boolean
             SUPER_TYPE:
                 description: 'Type of super image that Github action is going to recieve'
                 required: true
@@ -330,11 +335,10 @@ jobs:
                    export TMP_ENVIRO="$(pwd)/tmp"
                    mkdir tmp
                    if [ -e "$DIR/super.img" ]; then
-                    simg2img $DIR/super.img $DIR/super_raw.img 2>/dev/null
-                    if [ $? != "0" ]; then
-                      echo "Image is not sparse"
+                    if [ "${github.event.inputs.IS_SPARSE}" == "true" ]; then
+                        simg2img $DIR/super.img $DIR/super_raw.img 
                     fi
-                    if [ -e "$DIR/super_raw.img" ]; then
+                    if [ -e "$DIR/super_raw.img" ] && [ "${github.event.inputs.IS_SPARSE}" == "true" ] ; then
                         if [ "$(ls -nl "$DIR/super_raw.img" | awk '{print $5}')" -lt 100000 ]; then
                             rm -rf super_raw.img
                             lpdump $DIR/super.img > $TMP_ENVIRO/super_map.txt
@@ -392,10 +396,7 @@ jobs:
                    if [ "$(find $DIR/system.img -type f ! -size 0 -printf '%S\n' | sed 's/.\.[0-9]*//')" == 1 ]; then
                         echo "PRC"
                    else
-                        simg2img $DIR/system.img $DIR/system.raw.img 2>/dev/null
-                        if [ $? != "0" ]; then
-                          echo "System cant be converted to sparse"
-                        fi
+                        simg2img $DIR/system.img $DIR/system.raw.img
                    fi
                    if [ -e "$DIR/odm.img" ]; then
                         if [ -e "$DIR/product.img" ]; then
