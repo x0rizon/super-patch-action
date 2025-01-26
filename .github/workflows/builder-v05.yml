@@ -409,6 +409,7 @@ jobs:
                    fi
                    # 1
                    if [ -e "$DIR/odm.img" ]; then
+                   echo "ODM AREA"
                         if [ -e "$DIR/product.img" ]; then
                             if [ "$(ls -nl $DIR/product.img | awk '{print $5}')" -gt 6000 ]; then 
                                 cp -urf universal/product.img $DIR/product.img
@@ -422,6 +423,7 @@ jobs:
                         echo "Ok"
                    else
                        # 2
+                       echo "PRODUCT AREA"
                         if [ -e "$DIR/product.img" ]; then 
                              if [ "$(ls -nl $DIR/product.img | awk '{print $5}')" -gt 6000 ]; then
                                 cp -urf universal/product.img $DIR/product.img
