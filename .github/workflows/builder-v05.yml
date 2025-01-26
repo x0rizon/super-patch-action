@@ -62,6 +62,7 @@ on:
                     - 'zip'
                     - 'tar'
                     - 'img.gz'
+                    - 'img.xz'
                     - 'No compression'
             SFTP_PRIV_DEST:
                 description: 'Type remote sftp folder the finish product would land (would recommend to add this because of GH Releases limit of 2GB)'
@@ -105,7 +106,7 @@ jobs:
                   run: |
                     sudo apt update
                     sudo apt upgrade -y
-                    sudo apt install p7zip* aria2 wget android-tools* lz4 rsync zstd libprotobuf-dev brotli android-sdk-libsparse-utils
+                    sudo apt install p7zip* aria2 wget android-tools* lz4 rsync zstd libprotobuf-dev brotli android-sdk-libsparse-utils xz-utils
                     # IDK WHAT AM I DOING
                     pwd >> dir.txt
                     LOCATION_POINT=$(pwd)
@@ -170,6 +171,14 @@ jobs:
                             cd cmp_img
                             aria2c -x 10 "$GSILINK"
                             gunzip *.img.gz
+                            cp *.img system.img
+                            cd ..
+                            ;;
+                        "img.xz")
+                            mkdir cmp_img
+                            cd cmp_img
+                            aria2c -x 10 "$GSILINK"
+                            unxz *.img.xz
                             cp *.img system.img
                             cd ..
                             ;;
@@ -577,7 +586,7 @@ jobs:
                             Build Method: ${{ github.event.inputs.COMPRESSION_CHOICE }}
                             Note: If there's nothing here, then the Build was too big for Github Releases to acknowledge, visit the mirror instead
 
-                            Builder Used: New Generation v04 Builder
+                            Builder Used: New Generation v05 Builder - Jan 2025
 
                             Recommend: Please Decompress/Extract the super.img file then flash it to your device
                   env:
