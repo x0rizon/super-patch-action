@@ -63,7 +63,7 @@ on:
                     - 'img.xz'
                     - 'No compression'
             SPARSE_SYSTEM_GSI:
-                description: Set the GSI to not have it sparsed. There are system GSI images that are ok for being sparsed and others are not for some reason, so if building fails on the Building the whole super.img, Disabling this can be the fix
+                description: Set the GSI to have it sparsed. There are system GSI images that are ok for being sparsed and others are not for some reason, so if building fails on the Building the whole super.img, Disabling this can be the fix
                 default: true
                 type: boolean
             SFTP_PRIV_DEST:
