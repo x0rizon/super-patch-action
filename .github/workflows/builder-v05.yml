@@ -30,8 +30,6 @@ on:
                     - '7z'
                     - 'lz4'
                     - 'img'
-            FORDEVICE:
-                description: What is this for?, this is only for GH Action runners
             NAME_ID:
                 description: 'What you want to call the finished product (Prohibit the use of profanity)'
                 required: true
@@ -626,7 +624,6 @@ jobs:
                     message: |
                       **GSI Builder Triggered and released**: ${{github.event.inputs.NAME_REL}}
                         
-                        For: ${{github.event.inputs.FORDEVICE}}
 
                       GSI File: ${{github.event.inputs.GSI_LINK}}
                       Checksum:
