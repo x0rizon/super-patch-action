@@ -1,0 +1,40 @@
+
+name: 'TGBot Debug'
+
+on: 
+  workflow_dispatch:
+  
+
+jobs:
+  build:
+    name: 'Telegram Test Bot'
+    runs-on: ubuntu-latest
+    steps:
+       - name: send telegram message on push
+         uses: appleboy/telegram-action@master
+         with:
+          to: '${{secrets.TELEGRAM_TO}}'
+          token: '${{secrets.TELEGRAM_TOKEN}}'
+          format: html
+          message: |
+            This is a <b>test</b> message that has been brodcasted by the GH Actions using telegram-action - with inlinekb
+  
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+
+            <i>Also sorry, for the ping, i am conducting a test for the upcoming builder</i>
+
+          inline_keyboard: |
+            [  
+                [
+                {
+                    "text": "MizProject Github Home",
+                    "url": "https://github.com/MizProject"
+                },
+                {
+                    "text": "Garbage webpage of super-patch-actions",
+                    "url": "https://mizproject.github.io/super-patch-action/"
+                }
+                ]
+            ]
+        
+
