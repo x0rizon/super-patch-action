@@ -16,8 +16,7 @@ jobs:
             https://api.telegram.org/bot${{secrets.TELEGRAM_TOKEN}}/sendMessage \
             -d chat_id=${{secrets.TELEGRAM_TO}} \
             -d text="This is a test again, but this time, using curl + uhhhhhh thats it??? \n\n See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}" \
-            -d reply_markup='{"inline_keyboard": [[{"text": "MizProject Github Home", "url": "https://github.com/MizProject"}, {"text": "Super-patch-action Shitty WebUI", "url": "https://mizproject.github.io/super-patch-action/"]]}'
-
+            -d reply_markup='{"inline_keyboard": [[{"text": "MizProject Github Home", "url": "https://github.com/MizProject"}, {"text": "Super-patch-action Shitty WebUI", "url": "https://mizproject.github.io/super-patch-action/"}]]}'
          
             
         
