@@ -430,7 +430,7 @@ jobs:
                 curl -X POST \
                 https://api.telegram.org/bot${{secrets.TELEGRAM_TOKEN}}/sendMessage \
                 -d chat_id=${{secrets.TELEGRAM_TO}} \
-                -d text="**Super Patch in Action Released Something!!!** %0A%0A **Release Name:** ${{ github.event.inputs.GITHUB_RELEASE_HEADING }} %0A%0A **Build ID:** ${{ github.run_id }} %0A%0A **Super Image Used:** ${{ github.event.inputs.SUPER_IMAGE_URL }} %0A%0A **GSI ROM Used:** ${{ github.event.inputs.GSI_ROM_LINK }} %0A%0A **Mirror:** ${{secrets.SFTP_REPO_LINK}} %0A%0A **Builder Used:** Next Generation Super.img Patcher v06 - Febuary 2025 %0A%0A **Notes:** %0A%0A - Please prepare a backup of super.img and your personal data before doing this" \
+                -d text="Super Patch in Action Released Something!!! %0A%0A Release Name: ${{ github.event.inputs.GITHUB_RELEASE_HEADING }} %0A%0A Build ID: ${{ github.run_id }} %0A%0A Super Image Used: ${{ github.event.inputs.SUPER_IMAGE_URL }} %0A%0A GSI ROM Used: ${{ github.event.inputs.GSI_ROM_LINK }} %0A%0A Mirror: ${{secrets.SFTP_REPO_LINK}} %0A%0A Builder Used: Next Generation Super.img Patcher v06 - Febuary 2025 %0A%0A Notes: %0A%0A - Please prepare a backup of super.img and your personal data before doing this" \
                 -d reply_markup='{"inline_keyboard": [[{"text": "Github Releases", "url": "https://github.com/MizProject/super-patch-action/releases/tag/${{github.run_id}}"}, {"text": "Mirror", "url": "${{secrets.SFTP_REPO_LINK}}"}]]}'
                 
 
