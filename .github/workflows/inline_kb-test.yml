@@ -24,7 +24,7 @@ jobs:
             <i>Also sorry, for the ping, i am conducting a test for the upcoming builder</i>
 
           inline_keyboard: |
-            [  
+            
                 [
                 {
                     "text": "MizProject Github Home",
@@ -35,6 +35,6 @@ jobs:
                     "url": "https://mizproject.github.io/super-patch-action/"
                 }
                 ]
-            ]
+            
         
 
