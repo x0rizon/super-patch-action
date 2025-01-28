@@ -339,7 +339,7 @@ jobs:
               continue-on-error: true
               run: |
                 # Tryna make sure lol
-                export POS="$(pwd)/"
+                export POS="$(pwd)"
                 export DIR="$(pwd)/image_build"
                 export ODM="$DIR/odm.img"
                 export PRODUCT="$DIR/product.img"
