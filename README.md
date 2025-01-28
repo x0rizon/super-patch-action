@@ -7,6 +7,8 @@ No Linux, or WSL, or Termux Needed!
 > Note:<br> In March 2025, this area will undergone fixing to make sure it is user friendly as possible
 </div>
 
+Read the wiki: https://github.com/MizProject/super-patch-action/wiki
+
 ----
 
 <div align=center>
