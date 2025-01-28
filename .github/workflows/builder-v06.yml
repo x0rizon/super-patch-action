@@ -226,7 +226,7 @@ jobs:
                 export SUPER="$DIR/super.img"
                 export FAKEPROPS="$DIR/universal"
                 # ENV TEMP
-                export ENVTEMP="$DIR/envtemp"
+                export ENVTEMP="$DIR/ENVTEMP"
                 mkdir -p $ENVTEMP
                 if [ -e "$SUPER" ]; then
                     if [ "${{github.event.inputs.IS_SUPER_SPARSE}}" == 'true' ]; then
@@ -267,7 +267,7 @@ jobs:
                 export SUPER="$DIR/super.img"
                 export FAKEPROPS="$DIR/universal"
                 # ENV TEMP
-                export ENVTEMP="$DIR/envtemp"
+                export ENVTEMP="$DIR/ENVTEMP"
                 rm -rf $SYSTEM
                 cp cmp_img/system.img $SYSTEM
                 if [ "$(ls -nl "$SYSTEM" | awk '{print $5}')" -lt 100000 ]; then 
@@ -288,7 +288,7 @@ jobs:
                 export SUPER="$DIR/super.img"
                 export FAKEPROPS="$DIR/universal"
                 # ENV TEMP
-                export ENVTEMP="$DIR/envtemp"
+                export ENVTEMP="$DIR/ENVTEMP"
                 rm -rf $SUPER
                 if [ "$(find $DIR/system.img -type f ! -size 0 -printf '%S\n' | sed 's/.\.[0-9]*//')" == 1 ]; then
                     echo "SOMETHING IS NOT RIGHT ON THIS SYSTEM.IMG, PROCEEDING WITH EXTREME CAUTION"
@@ -350,7 +350,7 @@ jobs:
                 export SPARSE="$POS/sparsed/super.img"
                 export REL_DIR="$POS/rel"
                 # ENV TEMP
-                export ENVTEMP="$DIR/envtemp"
+                export ENVTEMP="$DIR/ENVTEMP"
                 mkdir -p $POS/sparsed
                 img2simg $DIR/super.img $SPARSE
                 # Compression should probably stay here
@@ -408,7 +408,7 @@ jobs:
                 export SUPER="$DIR/super.img"
                 export FAKEPROPS="$DIR/universal"
                 # ENV TEMP
-                export ENVTEMP="$DIR/envtemp"
+                export ENVTEMP="$DIR/ENVTEMP"
                 cd $DIR
                 case "${{github.event.inputs.COMPRESSION_RESULT_CHOICE}}" in
                     "tar")
