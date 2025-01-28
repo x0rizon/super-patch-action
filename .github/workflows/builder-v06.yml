@@ -178,7 +178,12 @@ jobs:
                         aria2c -x 15 $GSILINK
                         ;;
                 esac
-                cp *.img $(pwd)/system.img
+                if [ -e system.img ]; then
+                    # if theres a system.img inside a compressed file, just ignore
+                    echo "system.img found, ignoring the rest"
+                else
+                    mv *.img $(pwd)/system.img
+                fi
                 cd ..
                 mkdir -p image_build
                 cd image_build
