@@ -456,7 +456,7 @@ jobs:
                     files: |
                         rel/*
                     name: ${{ github.event.inputs.GITHUB_RELEASE_HEADING }}
-                    tag: ${{ github.run_id }}
+                    tag_name: ${{ github.run_id }}
                     body: |
                         This is the build of the Super.img patcher, the build was successful, and the output is attached to this release.
 
