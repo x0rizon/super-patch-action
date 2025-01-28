@@ -121,18 +121,18 @@ jobs:
               run: |
                 mkdir bin
                 cd bin
-                aria2c -x 15 https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpadd
-                aria2c -x 15 https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpdump
-                aria2c -x 15 https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpmake
-                aria2c -x 15 https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpunpack
+                wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpadd
+                wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpdump
+                wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpmake
+                wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/packages/amd64/lpunpack
                 chmod +x *
                 sudo cp -rf * /usr/bin/
                 cd ..
                 chmod +x /usr/bin/lpadd /usr/bin/lpdump /usr/bin/lpmake /usr/bin/lpunpack
                 mkdir universal
                 cd universal
-                aria2c -x 15 https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/fake-props/product.img
-                aria2c -x 15 https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/fake-props/system_ext.img
+                wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/fake-props/product.img
+                wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/fake-props/system_ext.img
                 cd ..
                 # had to put this here, because there will be a mechanism point to sparse the image
                 mkdir -p rel
