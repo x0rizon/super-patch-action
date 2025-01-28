@@ -1,6 +1,6 @@
 # 
 
-name: Super.img Patcher for A/B Devices, Build v06
+name: Super Patcher for A/B Devices, v4
 
 on:
     workflow_dispatch:
