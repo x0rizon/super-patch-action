@@ -65,6 +65,7 @@ on:
                 description: 'Is the GSI Sparse? (if true, the image will be converted first from sparse, to non-sparse to edit, RECOMMEND to read the wiki. TLDR: Recommended to be disabled)'
                 required: false
                 type: boolean
+                default: false
             SFTP_SERVER_DESTINATION:
                 description: 'Enter the SFTP Path Server Destination for the output... (Dont forget to add another slash at the end, like this: /home/pfs/project/rombuilds/GSI/Jan16/   ; with the part Jan16/ has a slash at the end)'
 
@@ -334,7 +335,7 @@ jobs:
                 fi
             
             - name: Sparsing super.img
-              if: ${{ github.event.inputs.IS_SUPER_SPARSE }} == 'true'
+              if: ${{ github.event.inputs.IS_SUPER_SPARSE == 'true' }}
               continue-on-error: true
               run: |
                 # Tryna make sure lol
