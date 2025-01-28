@@ -178,7 +178,7 @@ jobs:
                         aria2c -x 15 $GSILINK
                         ;;
                 esac
-                cp *.img system.img
+                cp *.img $(pwd)/system.img
                 cd ..
                 mkdir -p image_build
                 cd image_build
@@ -207,7 +207,7 @@ jobs:
                         aria2c -x 15 $SUPERLINK
                         ;;
                 esac
-                cp *.img super.img
+                cp -rf *.img $(pwd)/super.img
                 cd ..
             
             - name: Indexing Super.img
