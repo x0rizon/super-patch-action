@@ -212,7 +212,6 @@ jobs:
                         aria2c -x 15 $SUPERLINK
                         ;;
                 esac
-                cp -rf *.img $(pwd)/super.img
                 cd ..
             
             - name: Indexing Super.img
