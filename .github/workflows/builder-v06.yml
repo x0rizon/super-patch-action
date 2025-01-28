@@ -92,7 +92,7 @@ jobs:
                 echo "SFTP Server Destination: ${{ github.event.inputs.SFTP_SERVER_DESTINATION }}"
 
             - name: Checkout
-              run: actions/checkout@v3
+              uses: actions/checkout@v3
 
             - name: Clean Bloated Actions environment
               uses: rokibhasansagar/slimhub_actions@main
