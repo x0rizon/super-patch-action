@@ -294,6 +294,7 @@ jobs:
                         simg2img $DIR/system.img $DIR/system_raw.img
                         mv $DIR/system.img $DIR/system_usparsed.img
                         mv $DIR/system_raw.img $DIR/system.img
+                        mv $DIR/system_usparsed.img $DIR/system.img
                     fi
                 fi
                 if [ -e "$DIR/odm.img" ]; then
