@@ -128,7 +128,7 @@ jobs:
                 chmod +x *
                 sudo cp -rf * /usr/bin/
                 cd ..
-                chmod +x /usr/bin/lpadd /usr/bin/lpdump /usr/bin/lpmake /usr/bin/lpunpack
+                sudo chmod +x /usr/bin/lpadd /usr/bin/lpdump /usr/bin/lpmake /usr/bin/lpunpack
                 mkdir universal
                 cd universal
                 wget https://github.com/Mizumo-prjkt/super-patch/raw/refs/heads/main/fake-props/product.img
