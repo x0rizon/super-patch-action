@@ -12,7 +12,7 @@ No Linux, or WSL, or Termux Needed!
 <div align=center>
 <h3>Badges</h3>
 
-![alttext](https://img.shields.io/static/v1?label=Status&message=Working&color=brightgreen) ![alttext](https://img.shields.io/badge/Latest_Version-v0.3-purple) ![alttext](https://img.shields.io/badge/SFTP_to_SourceForge-GOOD-BrightGreen?style=flat&logo=Sourceforge) 
+![alttext](https://img.shields.io/static/v1?label=Status&message=Working&color=brightgreen) ![alttext](https://img.shields.io/badge/Latest_Version-v0.6-purple) ![alttext](https://img.shields.io/badge/SFTP_to_SourceForge-GOOD-BrightGreen?style=flat&logo=Sourceforge) 
 
 [![alttext](https://img.shields.io/badge/-Visit_Mizumo/Xynoxx's_SourceForge_By_clicking_ME-black?style=for-the-badge&logo=Sourceforge&logoColor=f5f5f5)](https://sourceforge.net/projects/xynoxx-prebuilt-gsi/files/) 
 
@@ -98,7 +98,7 @@ docker
 
 
 
-</div>
+<!-- </div>
 
 <div align=center>
 <h2>Table of Contents</h2>
@@ -242,4 +242,4 @@ Set compression Types
 
 Submit your bug report at issues, ill respond to them, and make a fix
 
-</div>
+</div> -->
