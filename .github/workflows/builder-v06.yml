@@ -346,7 +346,7 @@ jobs:
                 export SUPER="$DIR/super.img"
                 export FAKEPROPS="$DIR/universal"
                 # ENV TEMP
-                export ="$DIR/"
+                export ENVTEMP="$DIR/"
                 cd $DIR
                 case "${{github.event.inputs.COMPRESSION_RESULT_CHOICE}}" in
                     "tar")
