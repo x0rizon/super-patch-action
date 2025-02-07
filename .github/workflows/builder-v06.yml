@@ -89,7 +89,7 @@ jobs:
                 echo "Compression Result Choice: ${{ github.event.inputs.COMPRESSION_RESULT_CHOICE }}"
                 echo "GSI ROM Link: ${{ github.event.inputs.GSI_ROM_LINK }}"
                 echo "GSI Filetype: ${{ github.event.inputs.GSI_FILETYPE }}"
-                echo "Is the GSI Sparse? ${{ github.event.inputs.SPARSE_SYSTEM_IMAGE }}"
+                echo "Is the GSI Sparse? ${{ github.event.inputs._IMAGE }}"
                 echo "SFTP Server Destination: ${{ github.event.inputs.SFTP_SERVER_DESTINATION }}"
 
             - name: Checkout
@@ -297,9 +297,9 @@ jobs:
                     if [ "${{github.event.inputs.SPARSE_SYSTEM_IMAGE}}" == 'true' ]; then
                         echo "Converting GSI to non-sparse..."
                         simg2img $DIR/system.img $DIR/system_raw.img
-                        mv $DIR/system.img $DIR/system_usparsed.img
+                        rm -rf $DIR/system.img
                         mv $DIR/system_raw.img $DIR/system.img
-                        mv $DIR/system_usparsed.img $DIR/system.img
+                        echo "Converted"
                     fi
                 fi
                 if [ -e "$DIR/odm.img" ]; then
