@@ -600,9 +600,10 @@ jobs:
 
                             Builder Used: New Generation v05 Builder - Jan 2025
 
-                            Recommend: Please Decompress/Extract the super.img file then flash it to your device
-                  env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                            Recommend: Please Decompress/Extract the super.img file then flash it to your 
+                            env:
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
                 
             
 
